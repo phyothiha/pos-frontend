@@ -1,10 +1,24 @@
 import { Routes, Route } from "react-router";
-import Login from "./pages/Login";
+import Login from "@/pages/Login";
+import { PanelShell } from "@/components/layout/panel-shell";
+import { Dashboard } from "@/pages/dashboard";
+import { Products } from "@/pages/inventory/product";
+import { Categories } from "@/pages/inventory/category";
+import { Brands } from "@/pages/inventory/brand";
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route index element={<Login />} />
+
+      <Route element={<PanelShell />}>
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="inventory">
+          <Route path="products" element={<Products />} />
+          <Route path="categories" element={<Categories />} />
+          <Route path="brands" element={<Brands />} />
+        </Route>
+      </Route>
     </Routes>
   );
 }
