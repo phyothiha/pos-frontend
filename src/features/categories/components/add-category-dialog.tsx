@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import type { ApiValidationError } from "@/types/api";
 
 export function AddCategoryDialog() {
   const [open, setOpen] = useState(false);
@@ -53,25 +54,20 @@ export function AddCategoryDialog() {
       setOpen(false);
     } catch (error) {
       if (
-        isAxiosError<{
-          message: string;
-          errors?: Record<string, string[]>;
-        }>(error) &&
+        isAxiosError<ApiValidationError>(error) &&
         error.response?.status === 422
       ) {
         const errors = error.response.data.errors;
-        let hasFieldError = false;
-        for (const name of ["name", "description"] as const) {
-          if (errors?.[name]?.[0]) {
-            form.setError(name, { type: "server", message: errors[name][0] });
-            hasFieldError = true;
-          }
+
+        for (const [key, value] of Object.entries(errors)) {
+          form.setError(key as keyof CategoryFormValues, {
+            type: "server",
+            message: value[0],
+          });
         }
-        if (hasFieldError) return;
+
+        return;
       }
-      form.setError("root", {
-        message: "Unable to create category. Please try again.",
-      });
     }
   }
 
