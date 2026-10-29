@@ -3,6 +3,7 @@ import {
   createCategory,
   deleteCategory,
   getCategories,
+  getAllCategories,
   updateCategory,
 } from "./api";
 import type { CategoryFormValues } from "./schema";
@@ -21,6 +22,13 @@ export function useCategories(page = 1) {
   return useQuery({
     queryKey: ["categories", { page }],
     queryFn: ({ signal }) => getCategories(page, signal),
+  });
+}
+
+export function useAllCategories() {
+  return useQuery({
+    queryKey: ["categories", "all"],
+    queryFn: ({ signal }) => getAllCategories(signal),
   });
 }
 

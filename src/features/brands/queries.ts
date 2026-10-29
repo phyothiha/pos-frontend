@@ -3,6 +3,7 @@ import {
   createBrand,
   deleteBrand,
   getBrands,
+  getAllBrands,
   updateBrand,
 } from "./api";
 import type { BrandFormValues } from "./schema";
@@ -21,6 +22,13 @@ export function useBrands(page = 1) {
   return useQuery({
     queryKey: ["brands", { page }],
     queryFn: ({ signal }) => getBrands(page, signal),
+  });
+}
+
+export function useAllBrands() {
+  return useQuery({
+    queryKey: ["brands", "all"],
+    queryFn: ({ signal }) => getAllBrands(signal),
   });
 }
 

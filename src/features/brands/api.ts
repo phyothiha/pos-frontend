@@ -6,16 +6,12 @@ export interface Brand {
   id: number;
   name: string;
   description: string | null;
-  created_at: string | null;
-  updated_at: string | null;
-}
-
-interface BrandResponse {
-  data: Brand;
+  created_at: string;
+  updated_at: string;
 }
 
 export async function createBrand(values: BrandFormValues) {
-  const response = await api.post<BrandResponse>(
+  const response = await api.post<{ data: Brand }>(
     "/v1/inventory/brands",
     values,
   );
@@ -35,8 +31,16 @@ export async function getBrands(page: number, signal?: AbortSignal) {
   return response.data;
 }
 
+export async function getAllBrands(signal?: AbortSignal) {
+  const response = await api.get<{ data: Brand[] }>(
+    "/v1/inventory/brands/all",
+    { signal },
+  );
+  return response.data.data;
+}
+
 export async function updateBrand(id: number, values: BrandFormValues) {
-  const response = await api.put<BrandResponse>(
+  const response = await api.put<{ data: Brand }>(
     `/v1/inventory/brands/${id}`,
     values,
   );

@@ -6,16 +6,12 @@ export interface Category {
   id: number;
   name: string;
   description: string | null;
-  created_at: string | null;
-  updated_at: string | null;
-}
-
-interface CategoryResponse {
-  data: Category;
+  created_at: string;
+  updated_at: string;
 }
 
 export async function createCategory(values: CategoryFormValues) {
-  const response = await api.post<CategoryResponse>(
+  const response = await api.post<{ data: Category }>(
     "/v1/inventory/categories",
     values,
   );
@@ -35,8 +31,16 @@ export async function getCategories(page: number, signal?: AbortSignal) {
   return response.data;
 }
 
+export async function getAllCategories(signal?: AbortSignal) {
+  const response = await api.get<{ data: Category[] }>(
+    "/v1/inventory/categories/all",
+    { signal },
+  );
+  return response.data.data;
+}
+
 export async function updateCategory(id: number, values: CategoryFormValues) {
-  const response = await api.put<CategoryResponse>(
+  const response = await api.put<{ data: Category }>(
     `/v1/inventory/categories/${id}`,
     values,
   );
