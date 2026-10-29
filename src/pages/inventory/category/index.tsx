@@ -24,7 +24,10 @@ export function Categories() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Manage Categories
+        </h1>
         <AddCategoryDialog />
       </div>
       <Table>
