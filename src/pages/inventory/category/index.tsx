@@ -1,5 +1,7 @@
 import { useCategories } from "@/features/categories/queries";
 import { AddCategoryDialog } from "@/features/categories/components/add-category-dialog";
+import { EditCategoryDialog } from "@/features/categories/components/edit-category-dialog";
+import { DeleteCategoryDialog } from "@/features/categories/components/delete-category-dialog";
 import { useSearchParams } from "react-router";
 import { TablePagination } from "@/components/table-pagination";
 import {
@@ -30,30 +32,46 @@ export function Categories() {
           <TableRow>
             <TableHead>ID</TableHead>
             <TableHead>Name</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isPending ? (
             <TableRow>
-              <TableCell className="text-center" colSpan={2}>
+              <TableCell className="text-center" colSpan={3}>
                 Loading categories...
               </TableCell>
             </TableRow>
           ) : isError ? (
             <TableRow>
-              <TableCell className="text-center" colSpan={2}>
+              <TableCell className="text-center" colSpan={3}>
                 Failed to load categories.
               </TableCell>
             </TableRow>
           ) : data.data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={2}>No categories found.</TableCell>
+              <TableCell colSpan={3}>No categories found.</TableCell>
             </TableRow>
           ) : (
             data.data.map((category) => (
               <TableRow key={category.id}>
                 <TableCell>{category.id}</TableCell>
                 <TableCell className="font-medium">{category.name}</TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-2">
+                    <EditCategoryDialog category={category} />
+                    <DeleteCategoryDialog
+                      category={category}
+                      onDeleted={() => {
+                        if (data.data.length === 1 && page > 1) {
+                          const params = new URLSearchParams(searchParams);
+                          params.set("page", String(page - 1));
+                          setSearchParams(params);
+                        }
+                      }}
+                    />
+                  </div>
+                </TableCell>
               </TableRow>
             ))
           )}

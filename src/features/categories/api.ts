@@ -34,3 +34,16 @@ export async function getCategories(page: number, signal?: AbortSignal) {
 
   return response.data;
 }
+
+export async function updateCategory(id: number, values: CategoryFormValues) {
+  const response = await api.put<CategoryResponse>(
+    `/v1/inventory/categories/${id}`,
+    values,
+  );
+
+  return response.data;
+}
+
+export async function deleteCategory(id: number) {
+  await api.delete(`/v1/inventory/categories/${id}`);
+}

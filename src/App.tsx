@@ -5,6 +5,7 @@ import { Dashboard } from "@/pages/dashboard";
 import { Products } from "@/pages/inventory/product";
 import { Categories } from "@/pages/inventory/category";
 import { Brands } from "@/pages/inventory/brand";
+import { NotFound } from "@/pages/not-found";
 
 export default function App() {
   return (
@@ -13,12 +14,13 @@ export default function App() {
 
       <Route element={<PanelShell />}>
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="inventory">
-          <Route path="products" element={<Products />} />
-          <Route path="categories" element={<Categories />} />
-          <Route path="brands" element={<Brands />} />
-        </Route>
+
+        <Route path="products" element={<Products />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="brands" element={<Brands />} />
       </Route>
+
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
+import { toast } from "sonner";
 import {
   categoryFormSchema,
   type CategoryFormValues,
@@ -13,7 +14,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -37,10 +37,10 @@ export function AddCategoryDialog() {
     defaultValues: { name: "", description: "" },
   });
 
-  function handleOpenChange(nextOpen: boolean) {
+  function handleOpenChange(isOpen: boolean) {
     if (createCategory.isPending) return;
-    setOpen(nextOpen);
-    if (!nextOpen) {
+    setOpen(isOpen);
+    if (!isOpen) {
       form.reset();
       createCategory.reset();
     }
@@ -52,6 +52,7 @@ export function AddCategoryDialog() {
       await createCategory.mutateAsync(values);
       form.reset();
       setOpen(false);
+      toast.success("Category created successfully.");
     } catch (error) {
       if (
         isAxiosError<ApiValidationError>(error) &&
@@ -68,6 +69,8 @@ export function AddCategoryDialog() {
 
         return;
       }
+
+      toast.error("Failed to create category. Please try again.");
     }
   }
 
@@ -81,9 +84,6 @@ export function AddCategoryDialog() {
         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Add Category</DialogTitle>
-            <DialogDescription>
-              Enter a name and an optional description for the category.
-            </DialogDescription>
           </DialogHeader>
           <FieldGroup>
             <Controller
@@ -128,9 +128,7 @@ export function AddCategoryDialog() {
               )}
             />
           </FieldGroup>
-          {form.formState.errors.root && (
-            <FieldError errors={[form.formState.errors.root]} />
-          )}
+
           <DialogFooter>
             <DialogClose
               render={

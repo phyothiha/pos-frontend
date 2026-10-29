@@ -31,13 +31,13 @@ const data = {
     },
     {
       title: "Inventory",
-      url: "/inventory",
+      url: "#",
       icon: <PackageIcon />,
       isActive: true,
       items: [
-        { title: "Products", url: "/inventory/products" },
-        { title: "Categories", url: "/inventory/categories" },
-        { title: "Brands", url: "/inventory/brands" },
+        { title: "Products", url: "/products" },
+        { title: "Categories", url: "/categories" },
+        { title: "Brands", url: "/brands" },
       ],
     },
   ],
