@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Controller, useFieldArray, useForm, useWatch, type FieldPath } from "react-hook-form";
+import {
+  Controller,
+  useFieldArray,
+  useForm,
+  useWatch,
+  type FieldPath,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import { Link, useNavigate } from "react-router";
@@ -100,14 +106,25 @@ export function CreateInvoice() {
       toast.success("Invoice confirmed and available quantities updated.");
       navigate(`/invoices/${invoice.id}`);
     } catch (error) {
-      if (isAxiosError<ApiValidationError>(error) && error.response?.status === 422) {
+      if (
+        isAxiosError<ApiValidationError>(error) &&
+        error.response?.status === 422
+      ) {
         const validationErrors = error.response.data.errors ?? {};
         for (const [key, messages] of Object.entries(validationErrors)) {
-          if (key in invoiceFormSchema.shape || /^items\.\d+\.(product_id|quantity)$/.test(key)) {
-            form.setError(key as FieldPath<InvoiceFormValues>, { type: "server", message: messages[0] });
+          if (
+            key in invoiceFormSchema.shape ||
+            /^items\.\d+\.(product_id|quantity)$/.test(key)
+          ) {
+            form.setError(key as FieldPath<InvoiceFormValues>, {
+              type: "server",
+              message: messages[0],
+            });
           }
         }
-        const message = Object.values(validationErrors).flat().join(" ") || error.response.data.message;
+        const message =
+          Object.values(validationErrors).flat().join(" ") ||
+          error.response.data.message;
         form.setError("root", { type: "server", message });
         toast.error(message);
         return;
@@ -198,9 +215,7 @@ export function CreateInvoice() {
           <Card>
             <CardContent className="space-y-4">
               <h2 className="font-semibold">Products</h2>
-              <p className="text-sm text-muted-foreground">
-                Available quantity limits apply to both in-stock and pre-order products.
-              </p>
+
               <ProductPicker
                 onSelect={addProduct}
                 disabled={create.isPending || fields.length >= 100}
@@ -253,10 +268,14 @@ export function CreateInvoice() {
                                 <Input
                                   {...quantityField}
                                   value={
-                                    Number.isNaN(quantityField.value) ? "" : quantityField.value
+                                    Number.isNaN(quantityField.value)
+                                      ? ""
+                                      : quantityField.value
                                   }
                                   onChange={(event) =>
-                                    quantityField.onChange(event.target.valueAsNumber)
+                                    quantityField.onChange(
+                                      event.target.valueAsNumber,
+                                    )
                                   }
                                   aria-label={`Quantity for ${products[field.product_id]?.name}`}
                                   aria-invalid={fieldState.invalid}
@@ -313,7 +332,9 @@ export function CreateInvoice() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="payment_type">Payment Type *</FieldLabel>
+                      <FieldLabel htmlFor="payment_type">
+                        Payment Type *
+                      </FieldLabel>
                       <select
                         {...field}
                         id="payment_type"
@@ -432,9 +453,6 @@ export function CreateInvoice() {
         </fieldset>
         <FieldError errors={[errors.root]} />
         <div className="flex flex-wrap items-center justify-end gap-3">
-          <p className="text-sm text-muted-foreground">
-            Creating this invoice confirms the order and reduces available quantities.
-          </p>
           <Button type="submit" disabled={create.isPending}>
             {create.isPending ? "Creating..." : "Create Invoice"}
           </Button>

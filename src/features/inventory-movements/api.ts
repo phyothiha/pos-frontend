@@ -10,7 +10,7 @@ export interface InventoryMovement {
   invoice_id: number | null;
   user_id: number | null;
   user_name: string | null;
-  type: "opening" | "receipt" | "adjustment" | "sale" | "cancellation";
+  type: "opening" | "receipt" | "adjustment" | "sale" | "cancellation" | "return";
   quantity: number;
   balance_after: number;
   reason: string;

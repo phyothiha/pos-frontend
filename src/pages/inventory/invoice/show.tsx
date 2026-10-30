@@ -4,6 +4,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { useInvoice } from "@/features/invoices/queries";
 import { CollectPaymentDialog } from "@/features/invoices/components/collect-payment-dialog";
 import { CancelInvoiceDialog } from "@/features/invoices/components/cancel-invoice-dialog";
+import { UpdateDeliveryDialog } from "@/features/invoices/components/update-delivery-dialog";
 import { canCancelInvoice } from "@/features/invoices/status";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -113,8 +114,10 @@ export function InvoiceDetails() {
               </dd>
             </dl>
             <div className="flex flex-wrap gap-2">
+              <UpdateDeliveryDialog invoice={invoice} />
               {invoice.payment_status === "unpaid" &&
-                invoice.status !== "cancelled" && (
+                invoice.status !== "cancelled" &&
+                (invoice.payment_type !== "cod" || invoice.delivery_status === "delivered") && (
                   <CollectPaymentDialog invoice={invoice} />
                 )}
               {canCancelInvoice(invoice) && (
@@ -124,6 +127,35 @@ export function InvoiceDetails() {
           </CardContent>
         </Card>
       </div>
+      <Card>
+        <CardContent className="space-y-4">
+          <h2 className="font-semibold">Delivery History</h2>
+          {invoice.delivery_status_histories?.length ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>From</TableHead>
+                  <TableHead>To</TableHead>
+                  <TableHead>Changed By</TableHead>
+                  <TableHead>Time</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {invoice.delivery_status_histories.map((history) => (
+                  <TableRow key={history.id}>
+                    <TableCell className="capitalize">{history.from_status?.replaceAll("_", " ") ?? "—"}</TableCell>
+                    <TableCell className="capitalize">{history.to_status.replaceAll("_", " ")}</TableCell>
+                    <TableCell>{history.user_name}</TableCell>
+                    <TableCell>{new Date(history.created_at).toLocaleString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-sm text-muted-foreground">No delivery history yet.</p>
+          )}
+        </CardContent>
+      </Card>
       <Card>
         <CardContent className="space-y-4">
           <h2 className="font-semibold">Products</h2>

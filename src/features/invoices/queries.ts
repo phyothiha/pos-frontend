@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { cancelInvoice, collectPayment, createInvoice, getInvoice, getInvoices } from "./api";
+import { cancelInvoice, collectPayment, createInvoice, getInvoice, getInvoices, updateInvoiceDelivery, type DeliveryStatus } from "./api";
 
 export function useInvoices(page = 1) {
   return useQuery({
@@ -51,5 +51,20 @@ export function useCollectPayment(id: number) {
   return useMutation({
     mutationFn: (platformId: number | null) => collectPayment(id, platformId),
     onSuccess: () => client.invalidateQueries({ queryKey: ["invoices"] }),
+  });
+}
+
+export function useUpdateInvoiceDelivery(id: number) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (status: DeliveryStatus) => updateInvoiceDelivery(id, status),
+    onSuccess: async (invoice) => {
+      client.setQueryData(["invoices", id], invoice);
+      await Promise.all([
+        client.invalidateQueries({ queryKey: ["invoices"] }),
+        client.invalidateQueries({ queryKey: ["products"] }),
+        client.invalidateQueries({ queryKey: ["inventory-movements"] }),
+      ]);
+    },
   });
 }

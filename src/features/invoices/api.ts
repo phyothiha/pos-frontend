@@ -14,6 +14,17 @@ export interface InvoiceItem {
   line_total: number;
 }
 
+export type DeliveryStatus = "pending" | "preparing" | "ready_for_dispatch" | "on_the_way" | "delivered" | "cancelled" | "failed_delivery" | "returned";
+
+export interface DeliveryStatusHistory {
+  id: number;
+  from_status: DeliveryStatus | null;
+  to_status: DeliveryStatus;
+  user_id: number;
+  user_name: string;
+  created_at: string;
+}
+
 export interface Invoice {
   id: number;
   invoice_number: string;
@@ -27,7 +38,8 @@ export interface Invoice {
   payment_status: "paid" | "unpaid";
   payment_platform_id: number | null;
   payment_platform: PaymentPlatform | null;
-  delivery_status: string;
+  delivery_status: DeliveryStatus;
+  delivery_status_histories?: DeliveryStatusHistory[];
   subtotal: number;
   discount: number;
   delivery_fee: number;
@@ -75,6 +87,14 @@ export async function cancelInvoice(id: number) {
   const response = await api.patch<{ data: Invoice }>(
     `/v1/inventory/invoices/${id}/status`,
     { status: "cancelled" },
+  );
+  return response.data.data;
+}
+
+export async function updateInvoiceDelivery(id: number, status: DeliveryStatus) {
+  const response = await api.patch<{ data: Invoice }>(
+    `/v1/inventory/invoices/${id}/delivery`,
+    { delivery_status: status },
   );
   return response.data.data;
 }
