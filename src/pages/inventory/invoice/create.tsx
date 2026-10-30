@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import { Link, useNavigate } from "react-router";
@@ -75,6 +75,10 @@ export function CreateInvoice() {
   const errors = form.formState.errors;
 
   function addProduct(product: Product) {
+    if (!product.is_active || product.stock_quantity < 1) {
+      toast.error("This product is no longer available to order.");
+      return;
+    }
     const index = form
       .getValues("items")
       .findIndex((item) => item.product_id === product.id);
@@ -93,17 +97,22 @@ export function CreateInvoice() {
     form.clearErrors();
     try {
       const invoice = await create.mutateAsync(data);
-      toast.success("Invoice created successfully.");
+      toast.success("Invoice confirmed and available quantities updated.");
       navigate(`/invoices/${invoice.id}`);
     } catch (error) {
-      const message =
-        isAxiosError<ApiValidationError>(error) &&
-        error.response?.status === 422
-          ? Object.values(error.response.data.errors ?? {})
-              .flat()
-              .join(" ")
-          : "Failed to create invoice. Please try again.";
-      toast.error(message);
+      if (isAxiosError<ApiValidationError>(error) && error.response?.status === 422) {
+        const validationErrors = error.response.data.errors ?? {};
+        for (const [key, messages] of Object.entries(validationErrors)) {
+          if (key in invoiceFormSchema.shape || /^items\.\d+\.(product_id|quantity)$/.test(key)) {
+            form.setError(key as FieldPath<InvoiceFormValues>, { type: "server", message: messages[0] });
+          }
+        }
+        const message = Object.values(validationErrors).flat().join(" ") || error.response.data.message;
+        form.setError("root", { type: "server", message });
+        toast.error(message);
+        return;
+      }
+      toast.error("Failed to create invoice. Please try again.");
     }
   }
 
@@ -189,6 +198,9 @@ export function CreateInvoice() {
           <Card>
             <CardContent className="space-y-4">
               <h2 className="font-semibold">Products</h2>
+              <p className="text-sm text-muted-foreground">
+                Available quantity limits apply to both in-stock and pre-order products.
+              </p>
               <ProductPicker
                 onSelect={addProduct}
                 disabled={create.isPending || fields.length >= 100}
@@ -224,6 +236,7 @@ export function CreateInvoice() {
                             {products[field.product_id]?.type === "pre_order"
                               ? "Pre-Order"
                               : "In Stock"}
+                            {` · Available: ${products[field.product_id]?.stock_quantity ?? 0}`}
                           </p>
                         </TableCell>
                         <TableCell>
@@ -417,9 +430,13 @@ export function CreateInvoice() {
             </CardContent>
           </Card>
         </fieldset>
-        <div className="flex justify-end">
+        <FieldError errors={[errors.root]} />
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <p className="text-sm text-muted-foreground">
+            Creating this invoice confirms the order and reduces available quantities.
+          </p>
           <Button type="submit" disabled={create.isPending}>
-            {create.isPending ? "Saving..." : "Save Invoice"}
+            {create.isPending ? "Creating..." : "Create Invoice"}
           </Button>
         </div>
       </form>

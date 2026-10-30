@@ -42,6 +42,7 @@ export async function searchProducts(q: string, signal?: AbortSignal) {
 export async function createProduct(values: ProductFormValues) {
   const response = await api.post<{ data: Product }>("/v1/inventory/products", {
     ...values,
+    selling_price: Number(values.selling_price),
     stock_quantity:
       values.stock_quantity === undefined
         ? undefined

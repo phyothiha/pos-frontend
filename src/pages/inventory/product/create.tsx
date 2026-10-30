@@ -207,8 +207,10 @@ export function CreateProduct() {
                     <Input
                       {...field}
                       id="product-selling_price"
+                      value={Number.isNaN(field.value) ? "" : field.value}
+                      onChange={(event) => field.onChange(event.target.valueAsNumber)}
                       type="number"
-                      step="0.01"
+                      step="1"
                       min="0"
                       disabled={saving}
                       aria-required="true"
@@ -226,11 +228,13 @@ export function CreateProduct() {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="product-stock_quantity">
-                      Stock Quantity
+                      Available Quantity
                     </FieldLabel>
                     <Input
                       {...field}
                       id="product-stock_quantity"
+                      value={Number.isNaN(field.value) ? "" : field.value ?? ""}
+                      onChange={(event) => field.onChange(event.target.valueAsNumber)}
                       type="number"
                       step="1"
                       min="0"

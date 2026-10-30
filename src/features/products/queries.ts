@@ -18,7 +18,10 @@ export function useCreateProduct() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createProduct,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["products"] }),
+    onSuccess: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["products"] }),
+      queryClient.invalidateQueries({ queryKey: ["inventory-movements"] }),
+    ]),
   });
 }
 
@@ -26,7 +29,10 @@ export function useUpdateProduct(id: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (values: ProductFormValues) => updateProduct(id, values),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["products"] }),
+    onSuccess: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["products"] }),
+      queryClient.invalidateQueries({ queryKey: ["inventory-movements"] }),
+    ]),
   });
 }
 

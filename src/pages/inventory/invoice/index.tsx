@@ -40,6 +40,7 @@ export function Invoices() {
             <TableHead>Customer</TableHead>
             <TableHead>Payment Type</TableHead>
             <TableHead>Payment Status</TableHead>
+            <TableHead>Order Status</TableHead>
             <TableHead className="text-right">Total (MMK)</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -47,11 +48,11 @@ export function Invoices() {
         <TableBody>
           {invoices.isPending ? (
             <TableRow>
-              <TableCell colSpan={7}>Loading invoices...</TableCell>
+              <TableCell colSpan={8}>Loading invoices...</TableCell>
             </TableRow>
           ) : invoices.isError ? (
             <TableRow>
-              <TableCell colSpan={7}>
+              <TableCell colSpan={8}>
                 Failed to load invoices.{" "}
                 <Button variant="link" onClick={() => invoices.refetch()}>
                   Retry
@@ -60,7 +61,7 @@ export function Invoices() {
             </TableRow>
           ) : invoices.data.data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7}>No invoices found.</TableCell>
+              <TableCell colSpan={8}>No invoices found.</TableCell>
             </TableRow>
           ) : (
             invoices.data.data.map((invoice) => (
@@ -88,6 +89,11 @@ export function Invoices() {
                     className={`rounded-md px-2 py-1 text-xs ${invoice.payment_status === "paid" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}
                   >
                     {invoice.payment_status === "paid" ? "Paid" : "Unpaid"}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className={`rounded-md px-2 py-1 text-xs capitalize ${invoice.status === "cancelled" ? "bg-red-100 text-red-800" : invoice.status === "confirmed" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}>
+                    {invoice.status}
                   </span>
                 </TableCell>
                 <TableCell className="text-right">

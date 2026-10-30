@@ -12,6 +12,7 @@ import { Invoices } from "@/pages/inventory/invoice";
 import { CreateInvoice } from "@/pages/inventory/invoice/create";
 import { InvoiceDetails } from "@/pages/inventory/invoice/show";
 import { PaymentPlatforms } from "@/pages/inventory/payment-platform";
+import { InventoryMovements } from "@/pages/inventory/movement";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
 
           <Route path="products" element={<Products />} />
           <Route path="products/create" element={<CreateProduct />} />
+          <Route path="inventory-movements" element={<InventoryMovements />} />
           <Route path="categories" element={<Categories />} />
           <Route path="brands" element={<Brands />} />
           <Route path="invoices" element={<Invoices />} />

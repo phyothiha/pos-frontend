@@ -3,6 +3,8 @@ import { isAxiosError } from "axios";
 import { ArrowLeftIcon } from "lucide-react";
 import { useInvoice } from "@/features/invoices/queries";
 import { CollectPaymentDialog } from "@/features/invoices/components/collect-payment-dialog";
+import { CancelInvoiceDialog } from "@/features/invoices/components/cancel-invoice-dialog";
+import { canCancelInvoice } from "@/features/invoices/status";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -110,10 +112,15 @@ export function InvoiceDetails() {
                 {invoice.delivery_status.replaceAll("_", " ")}
               </dd>
             </dl>
-            {invoice.payment_status === "unpaid" &&
-              invoice.status !== "cancelled" && (
-                <CollectPaymentDialog invoice={invoice} />
+            <div className="flex flex-wrap gap-2">
+              {invoice.payment_status === "unpaid" &&
+                invoice.status !== "cancelled" && (
+                  <CollectPaymentDialog invoice={invoice} />
+                )}
+              {canCancelInvoice(invoice) && (
+                <CancelInvoiceDialog invoice={invoice} />
               )}
+            </div>
           </CardContent>
         </Card>
       </div>

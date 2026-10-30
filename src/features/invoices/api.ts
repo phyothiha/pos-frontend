@@ -70,3 +70,11 @@ export async function collectPayment(id: number, platformId: number | null) {
   );
   return response.data.data;
 }
+
+export async function cancelInvoice(id: number) {
+  const response = await api.patch<{ data: Invoice }>(
+    `/v1/inventory/invoices/${id}/status`,
+    { status: "cancelled" },
+  );
+  return response.data.data;
+}

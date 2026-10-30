@@ -82,7 +82,8 @@ export function ProductPicker({
                   {product.selling_price.toLocaleString()} MMK ·{" "}
                   {product.type === "pre_order"
                     ? "Pre-Order"
-                    : `Stock: ${product.stock_quantity}`}
+                    : "In Stock"}
+                  {` · Available: ${product.stock_quantity}`}
                 </span>
               </div>
             </ComboboxItem>

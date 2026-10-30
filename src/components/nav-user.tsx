@@ -8,14 +8,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth, useLogout } from "@/features/auth/queries";
 
 export function NavUser() {
-  const { isMobile } = useSidebar();
   const { user } = useAuth();
   const logout = useLogout();
   if (!user) return null;
@@ -45,7 +43,7 @@ export function NavUser() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-fit"
-            side={isMobile ? "bottom" : "right"}
+            side="right"
             align="end"
             sideOffset={4}
           >

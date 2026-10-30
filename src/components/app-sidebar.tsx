@@ -36,6 +36,7 @@ const data = {
       isActive: true,
       items: [
         { title: "Products", url: "/products" },
+        { title: "Stock History", url: "/inventory-movements" },
         { title: "Categories", url: "/categories" },
         { title: "Brands", url: "/brands" },
       ],

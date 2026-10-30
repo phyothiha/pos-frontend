@@ -42,7 +42,7 @@ export function Products() {
             <TableHead>Category</TableHead>
             <TableHead>Brand</TableHead>
             <TableHead className="text-right">Selling Price</TableHead>
-            <TableHead className="text-right">Stock Quantity</TableHead>
+            <TableHead className="text-right">Available Quantity</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -97,6 +97,10 @@ export function Products() {
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-end gap-2">
+                    <Button nativeButton={false} variant="outline" size="sm"
+                      render={<Link to={`/inventory-movements?product_id=${product.id}`} />}>
+                      History
+                    </Button>
                     <EditProductDialog product={product} />
                     <DeleteProductDialog
                       product={product}

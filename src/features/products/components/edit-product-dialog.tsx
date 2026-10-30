@@ -114,7 +114,7 @@ export function EditProductDialog({ product }: { product: Product }) {
                 ["name", "Name", "text", 255],
                 ["sku", "SKU", "text", 100],
                 ["selling_price", "Selling Price", "number", undefined],
-                ["stock_quantity", "Stock Quantity", "number", undefined],
+                ["stock_quantity", "Available Quantity", "number", undefined],
               ] as const
             ).map(([name, label, type, maxLength]) => (
               <Controller
@@ -128,7 +128,10 @@ export function EditProductDialog({ product }: { product: Product }) {
                     </FieldLabel>
                     <Input
                       {...field}
-                      value={field.value ?? ""}
+                      value={Number.isNaN(field.value) ? "" : field.value ?? ""}
+                      onChange={(event) => field.onChange(
+                        type === "number" ? event.target.valueAsNumber : event.target.value,
+                      )}
                       id={`product-${name}-${product.id}`}
                       type={type}
                       maxLength={maxLength}
