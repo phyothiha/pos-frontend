@@ -99,9 +99,7 @@ export function CreateProduct() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="product-name">
-                      Name <span className="text-red-500">*</span>
-                    </FieldLabel>
+                    <FieldLabel htmlFor="product-name">Name *</FieldLabel>
                     <Input
                       {...field}
                       id="product-name"
@@ -121,9 +119,7 @@ export function CreateProduct() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="product-sku">
-                      SKU <span className="text-red-500">*</span>
-                    </FieldLabel>
+                    <FieldLabel htmlFor="product-sku">SKU *</FieldLabel>
                     <Input
                       {...field}
                       id="product-sku"
@@ -144,7 +140,7 @@ export function CreateProduct() {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="product-category">
-                      Category <span className="text-red-500">*</span>
+                      Category *
                     </FieldLabel>
                     <select
                       {...field}
@@ -175,9 +171,7 @@ export function CreateProduct() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="product-brand">
-                      Brand <span className="text-red-500">*</span>
-                    </FieldLabel>
+                    <FieldLabel htmlFor="product-brand">Brand *</FieldLabel>
                     <select
                       {...field}
                       id="product-brand"
@@ -208,7 +202,7 @@ export function CreateProduct() {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="product-selling_price">
-                      Selling Price <span className="text-red-500">*</span>
+                      Selling Price *
                     </FieldLabel>
                     <Input
                       {...field}
@@ -276,9 +270,7 @@ export function CreateProduct() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="product-status">
-                      Status <span className="text-red-500">*</span>
-                    </FieldLabel>
+                    <FieldLabel htmlFor="product-status">Status *</FieldLabel>
                     <select
                       name={field.name}
                       ref={field.ref}
