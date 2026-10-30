@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router";
+import { RequireAuth, GuestOnly } from "@/features/auth/auth-routes";
 import Login from "@/pages/Login";
 import { PanelShell } from "@/components/layout/panel-shell";
 import { Dashboard } from "@/pages/dashboard";
@@ -15,19 +16,23 @@ import { PaymentPlatforms } from "@/pages/inventory/payment-platform";
 export default function App() {
   return (
     <Routes>
-      <Route index element={<Login />} />
+      <Route element={<GuestOnly />}>
+        <Route index element={<Login />} />
+      </Route>
 
-      <Route element={<PanelShell />}>
-        <Route path="dashboard" element={<Dashboard />} />
+      <Route element={<RequireAuth />}>
+        <Route element={<PanelShell />}>
+          <Route path="dashboard" element={<Dashboard />} />
 
-        <Route path="products" element={<Products />} />
-        <Route path="products/create" element={<CreateProduct />} />
-        <Route path="categories" element={<Categories />} />
-        <Route path="brands" element={<Brands />} />
-        <Route path="invoices" element={<Invoices />} />
-        <Route path="invoices/create" element={<CreateInvoice />} />
-        <Route path="invoices/:id" element={<InvoiceDetails />} />
-        <Route path="payment-platforms" element={<PaymentPlatforms />} />
+          <Route path="products" element={<Products />} />
+          <Route path="products/create" element={<CreateProduct />} />
+          <Route path="categories" element={<Categories />} />
+          <Route path="brands" element={<Brands />} />
+          <Route path="invoices" element={<Invoices />} />
+          <Route path="invoices/create" element={<CreateInvoice />} />
+          <Route path="invoices/:id" element={<InvoiceDetails />} />
+          <Route path="payment-platforms" element={<PaymentPlatforms />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<NotFound />} />

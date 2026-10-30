@@ -49,3 +49,9 @@ export const invoiceFormSchema = z
   );
 
 export type InvoiceFormValues = z.infer<typeof invoiceFormSchema>;
+
+export const collectPaymentFormSchema = z.object({
+  payment_platform_id: z.number().int().positive().nullable(),
+});
+
+export type CollectPaymentFormValues = z.infer<typeof collectPaymentFormSchema>;

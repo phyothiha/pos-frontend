@@ -36,7 +36,6 @@ export function EditProductDialog({ product }: { product: Product }) {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
   });
-  const errors = form.formState.errors;
 
   function changeOpen(value: boolean) {
     if (update.isPending) return;
@@ -118,21 +117,31 @@ export function EditProductDialog({ product }: { product: Product }) {
                 ["stock_quantity", "Stock Quantity", "number", undefined],
               ] as const
             ).map(([name, label, type, maxLength]) => (
-              <Field key={name} data-invalid={!!errors[name]}>
-                <FieldLabel htmlFor={`product-${name}-${product.id}`}>
-                  {label}
-                </FieldLabel>
-                <Input
-                  {...form.register(name)}
-                  id={`product-${name}-${product.id}`}
-                  type={type}
-                  maxLength={maxLength}
-                  min={type === "number" ? 0 : undefined}
-                  step={type === "number" ? 1 : undefined}
-                  aria-invalid={!!errors[name]}
-                />
-                <FieldError errors={[errors[name]]} />
-              </Field>
+              <Controller
+                key={name}
+                name={name}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={`product-${name}-${product.id}`}>
+                      {label}
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      id={`product-${name}-${product.id}`}
+                      type={type}
+                      maxLength={maxLength}
+                      min={type === "number" ? 0 : undefined}
+                      step={type === "number" ? 1 : undefined}
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
             ))}
             {(
               [
@@ -140,58 +149,79 @@ export function EditProductDialog({ product }: { product: Product }) {
                 ["brand_id", "Brand", brands],
               ] as const
             ).map(([name, label, query]) => (
-              <Field key={name} data-invalid={!!errors[name]}>
-                <FieldLabel htmlFor={`product-${name}-${product.id}`}>
-                  {label}
-                </FieldLabel>
-                <select
-                  {...form.register(name, { valueAsNumber: true })}
-                  id={`product-${name}-${product.id}`}
-                  className={selectClass}
-                  disabled={
-                    update.isPending || query.isPending || query.isError
-                  }
-                  aria-invalid={!!errors[name]}
-                >
-                  <option value={0}>Select a {label.toLowerCase()}</option>
-                  {query.data?.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.name}
-                    </option>
-                  ))}
-                </select>
-                {query.isPending && (
-                  <p className="text-sm text-muted-foreground">Loading...</p>
-                )}
-                {query.isError && (
-                  <p role="alert" className="text-sm text-destructive">
-                    Failed to load options.{" "}
-                    <button
-                      type="button"
-                      className="underline"
-                      onClick={() => query.refetch()}
+              <Controller
+                key={name}
+                name={name}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={`product-${name}-${product.id}`}>
+                      {label}
+                    </FieldLabel>
+                    <select
+                      {...field}
+                      onChange={(event) =>
+                        field.onChange(Number(event.target.value))
+                      }
+                      id={`product-${name}-${product.id}`}
+                      className={selectClass}
+                      disabled={
+                        update.isPending || query.isPending || query.isError
+                      }
+                      aria-invalid={fieldState.invalid}
                     >
-                      Retry
-                    </button>
-                  </p>
+                      <option value={0}>Select a {label.toLowerCase()}</option>
+                      {query.data?.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.name}
+                        </option>
+                      ))}
+                    </select>
+                    {query.isPending && (
+                      <p className="text-sm text-muted-foreground">Loading...</p>
+                    )}
+                    {query.isError && (
+                      <p role="alert" className="text-sm text-destructive">
+                        Failed to load options.{" "}
+                        <button
+                          type="button"
+                          className="underline"
+                          onClick={() => query.refetch()}
+                        >
+                          Retry
+                        </button>
+                      </p>
+                    )}
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
                 )}
-                <FieldError errors={[errors[name]]} />
-              </Field>
+              />
             ))}
-            <Field>
-              <FieldLabel htmlFor={`product-type-${product.id}`}>
-                Type
-              </FieldLabel>
-              <select
-                {...form.register("type")}
-                id={`product-type-${product.id}`}
-                className={selectClass}
-              >
-                <option value="in_stock">In Stock</option>
-                <option value="pre_order">Pre-Order</option>
-              </select>
-              <FieldError errors={[errors.type]} />
-            </Field>
+            <Controller
+              name="type"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={`product-type-${product.id}`}>
+                    Type
+                  </FieldLabel>
+                  <select
+                    {...field}
+                    id={`product-type-${product.id}`}
+                    className={selectClass}
+                    aria-invalid={fieldState.invalid}
+                  >
+                    <option value="in_stock">In Stock</option>
+                    <option value="pre_order">Pre-Order</option>
+                  </select>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
             <Controller
               name="is_active"
               control={form.control}

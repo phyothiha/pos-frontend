@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import { Link, useNavigate } from "react-router";
@@ -140,32 +140,49 @@ export function CreateInvoice() {
                     ["invoice_date", "Invoice Date", "date", undefined],
                   ] as const
                 ).map(([name, label, type, maxLength]) => (
-                  <Field key={name} data-invalid={!!errors[name]}>
-                    <FieldLabel htmlFor={name}>{label} *</FieldLabel>
-                    <Input
-                      {...form.register(name)}
-                      id={name}
-                      type={type}
-                      maxLength={maxLength}
-                      aria-invalid={!!errors[name]}
-                    />
-                    <FieldError errors={[errors[name]]} />
-                  </Field>
-                ))}
-                <Field
-                  className="md:col-span-2"
-                  data-invalid={!!errors.delivery_address}
-                >
-                  <FieldLabel htmlFor="delivery_address">
-                    Delivery Address *
-                  </FieldLabel>
-                  <Textarea
-                    {...form.register("delivery_address")}
-                    id="delivery_address"
-                    aria-invalid={!!errors.delivery_address}
+                  <Controller
+                    key={name}
+                    name={name}
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor={name}>{label} *</FieldLabel>
+                        <Input
+                          {...field}
+                          id={name}
+                          type={type}
+                          maxLength={maxLength}
+                          aria-invalid={fieldState.invalid}
+                        />
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </Field>
+                    )}
                   />
-                  <FieldError errors={[errors.delivery_address]} />
-                </Field>
+                ))}
+                <Controller
+                  name="delivery_address"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field
+                      className="md:col-span-2"
+                      data-invalid={fieldState.invalid}
+                    >
+                      <FieldLabel htmlFor="delivery_address">
+                        Delivery Address *
+                      </FieldLabel>
+                      <Textarea
+                        {...field}
+                        id="delivery_address"
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
               </div>
             </CardContent>
           </Card>
@@ -215,18 +232,31 @@ export function CreateInvoice() {
                           ]?.selling_price.toLocaleString()}
                         </TableCell>
                         <TableCell>
-                          <Input
-                            aria-label={`Quantity for ${products[field.product_id]?.name}`}
-                            type="number"
-                            min={1}
-                            step={1}
-                            className="w-24"
-                            {...form.register(`items.${index}.quantity`, {
-                              valueAsNumber: true,
-                            })}
-                          />
-                          <FieldError
-                            errors={[errors.items?.[index]?.quantity]}
+                          <Controller
+                            name={`items.${index}.quantity`}
+                            control={form.control}
+                            render={({ field: quantityField, fieldState }) => (
+                              <Field data-invalid={fieldState.invalid}>
+                                <Input
+                                  {...quantityField}
+                                  value={
+                                    Number.isNaN(quantityField.value) ? "" : quantityField.value
+                                  }
+                                  onChange={(event) =>
+                                    quantityField.onChange(event.target.valueAsNumber)
+                                  }
+                                  aria-label={`Quantity for ${products[field.product_id]?.name}`}
+                                  aria-invalid={fieldState.invalid}
+                                  type="number"
+                                  min={1}
+                                  step={1}
+                                  className="w-24"
+                                />
+                                {fieldState.invalid && (
+                                  <FieldError errors={[fieldState.error]} />
+                                )}
+                              </Field>
+                            )}
                           />
                         </TableCell>
                         <TableCell className="text-right">
@@ -265,63 +295,83 @@ export function CreateInvoice() {
             <CardContent className="space-y-4">
               <h2 className="font-semibold">Payment & Totals</h2>
               <div className="grid gap-4 md:grid-cols-2">
-                <Field>
-                  <FieldLabel htmlFor="payment_type">Payment Type *</FieldLabel>
-                  <select
-                    id="payment_type"
-                    className={selectClass}
-                    {...form.register("payment_type")}
-                  >
-                    <option value="cod">Cash on Delivery (COD)</option>
-                    <option value="paid">Paid</option>
-                  </select>
-                </Field>
+                <Controller
+                  name="payment_type"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="payment_type">Payment Type *</FieldLabel>
+                      <select
+                        {...field}
+                        id="payment_type"
+                        className={selectClass}
+                        aria-invalid={fieldState.invalid}
+                      >
+                        <option value="cod">Cash on Delivery (COD)</option>
+                        <option value="paid">Paid</option>
+                      </select>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
                 {values.payment_type === "paid" && (
-                  <Field data-invalid={!!errors.payment_platform_id}>
-                    <FieldLabel htmlFor="payment_platform_id">
-                      Payment Platform *
-                    </FieldLabel>
-                    <select
-                      id="payment_platform_id"
-                      className={selectClass}
-                      {...form.register("payment_platform_id", {
-                        valueAsNumber: true,
-                      })}
-                      disabled={platforms.isPending || platforms.isError}
-                    >
-                      <option value={0}>Select a platform</option>
-                      {platforms.data?.map((platform) => (
-                        <option key={platform.id} value={platform.id}>
-                          {platform.name}
-                        </option>
-                      ))}
-                    </select>
-                    <FieldError errors={[errors.payment_platform_id]} />
-                    {platforms.isPending && (
-                      <p className="text-sm">Loading platforms...</p>
-                    )}
-                    {platforms.isError && (
-                      <p role="alert" className="text-sm text-destructive">
-                        Failed to load platforms.{" "}
-                        <button
-                          type="button"
-                          className="underline"
-                          onClick={() => platforms.refetch()}
+                  <Controller
+                    name="payment_platform_id"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor="payment_platform_id">
+                          Payment Platform *
+                        </FieldLabel>
+                        <select
+                          {...field}
+                          onChange={(event) =>
+                            field.onChange(Number(event.target.value))
+                          }
+                          id="payment_platform_id"
+                          className={selectClass}
+                          disabled={platforms.isPending || platforms.isError}
+                          aria-invalid={fieldState.invalid}
                         >
-                          Retry
-                        </button>
-                      </p>
+                          <option value={0}>Select a platform</option>
+                          {platforms.data?.map((platform) => (
+                            <option key={platform.id} value={platform.id}>
+                              {platform.name}
+                            </option>
+                          ))}
+                        </select>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                        {platforms.isPending && (
+                          <p className="text-sm">Loading platforms...</p>
+                        )}
+                        {platforms.isError && (
+                          <p role="alert" className="text-sm text-destructive">
+                            Failed to load platforms.{" "}
+                            <button
+                              type="button"
+                              className="underline"
+                              onClick={() => platforms.refetch()}
+                            >
+                              Retry
+                            </button>
+                          </p>
+                        )}
+                        {platforms.data?.length === 0 && (
+                          <p className="text-sm">
+                            Add a platform on the{" "}
+                            <Link className="underline" to="/payment-platforms">
+                              Payment Platforms
+                            </Link>{" "}
+                            page.
+                          </p>
+                        )}
+                      </Field>
                     )}
-                    {platforms.data?.length === 0 && (
-                      <p className="text-sm">
-                        Add a platform on the{" "}
-                        <Link className="underline" to="/payment-platforms">
-                          Payment Platforms
-                        </Link>{" "}
-                        page.
-                      </p>
-                    )}
-                  </Field>
+                  />
                 )}
                 {(
                   [
@@ -329,17 +379,31 @@ export function CreateInvoice() {
                     ["delivery_fee", "Delivery Fee (MMK)"],
                   ] as const
                 ).map(([name, label]) => (
-                  <Field key={name} data-invalid={!!errors[name]}>
-                    <FieldLabel htmlFor={name}>{label}</FieldLabel>
-                    <Input
-                      id={name}
-                      type="number"
-                      min={0}
-                      step={1}
-                      {...form.register(name, { valueAsNumber: true })}
-                    />
-                    <FieldError errors={[errors[name]]} />
-                  </Field>
+                  <Controller
+                    key={name}
+                    name={name}
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor={name}>{label}</FieldLabel>
+                        <Input
+                          {...field}
+                          value={Number.isNaN(field.value) ? "" : field.value}
+                          onChange={(event) =>
+                            field.onChange(event.target.valueAsNumber)
+                          }
+                          id={name}
+                          type="number"
+                          min={0}
+                          step={1}
+                          aria-invalid={fieldState.invalid}
+                        />
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </Field>
+                    )}
+                  />
                 ))}
               </div>
               <dl className="ml-auto grid max-w-sm grid-cols-2 gap-2 border-t pt-4 text-sm">
