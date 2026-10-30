@@ -91,9 +91,7 @@ export function AddCategoryDialog() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="category-name">
-                    Name <span className="text-red-500">*</span>
-                  </FieldLabel>
+                  <FieldLabel htmlFor="category-name">Name *</FieldLabel>
                   <Input
                     {...field}
                     id="category-name"

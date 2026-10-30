@@ -1,6 +1,8 @@
 import { Link, useSearchParams } from "react-router";
 import { PlusIcon } from "lucide-react";
 import { useProducts } from "@/features/products/queries";
+import { EditProductDialog } from "@/features/products/components/edit-product-dialog";
+import { DeleteProductDialog } from "@/features/products/components/delete-product-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { TablePagination } from "@/components/table-pagination";
 import {
@@ -43,18 +45,19 @@ export function Products() {
             <TableHead className="text-right">Stock Quantity</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isPending ? (
             <TableRow>
-              <TableCell className="text-center" colSpan={9}>
+              <TableCell className="text-center" colSpan={10}>
                 Loading products...
               </TableCell>
             </TableRow>
           ) : isError ? (
             <TableRow>
-              <TableCell className="text-center" colSpan={9}>
+              <TableCell className="text-center" colSpan={10}>
                 Failed to load products.{" "}
                 <Button
                   type="button"
@@ -67,7 +70,7 @@ export function Products() {
             </TableRow>
           ) : data.data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={9}>No products found.</TableCell>
+              <TableCell colSpan={10}>No products found.</TableCell>
             </TableRow>
           ) : (
             data.data.map((product) => (
@@ -91,6 +94,21 @@ export function Products() {
                 </TableCell>
                 <TableCell>
                   {product.is_active ? "Active" : "Inactive"}
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-2">
+                    <EditProductDialog product={product} />
+                    <DeleteProductDialog
+                      product={product}
+                      onDeleted={() => {
+                        if (data.data.length === 1 && page > 1) {
+                          const params = new URLSearchParams(searchParams);
+                          params.set("page", String(page - 1));
+                          setSearchParams(params);
+                        }
+                      }}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))

@@ -104,7 +104,7 @@ export function EditCategoryDialog({ category }: { category: Category }) {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={`category-name-${category.id}`}>
-                    Name <span className="text-red-500">*</span>
+                    Name *
                   </FieldLabel>
                   <Input
                     {...field}

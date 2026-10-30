@@ -63,15 +63,12 @@ export function CreateProduct() {
             form.setError(field, { type: "server", message: messages[0] });
             firstField ??= field;
           } else {
-            form.setError("root", { message: messages[0] });
+            toast.error(messages[0]);
           }
         }
         if (firstField) form.setFocus(firstField);
         return;
       }
-      form.setError("root", {
-        message: "Failed to create product. Please try again.",
-      });
       toast.error("Failed to create product. Please try again.");
     }
   }
@@ -306,11 +303,6 @@ export function CreateProduct() {
                 )}
               />
             </FieldGroup>
-            {form.formState.errors.root && (
-              <p role="alert" className="text-sm text-destructive">
-                {form.formState.errors.root.message}
-              </p>
-            )}
             <div className="flex justify-end gap-2 border-t pt-4">
               <Button
                 type="button"

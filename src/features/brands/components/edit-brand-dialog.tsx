@@ -104,7 +104,7 @@ export function EditBrandDialog({ brand }: { brand: Brand }) {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={`brand-name-${brand.id}`}>
-                    Name <span className="text-red-500">*</span>
+                    Name *
                   </FieldLabel>
                   <Input
                     {...field}

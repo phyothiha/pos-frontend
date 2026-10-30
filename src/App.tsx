@@ -7,6 +7,10 @@ import { CreateProduct } from "@/pages/inventory/product/create";
 import { Categories } from "@/pages/inventory/category";
 import { Brands } from "@/pages/inventory/brand";
 import { NotFound } from "@/pages/not-found";
+import { Invoices } from "@/pages/inventory/invoice";
+import { CreateInvoice } from "@/pages/inventory/invoice/create";
+import { InvoiceDetails } from "@/pages/inventory/invoice/show";
+import { PaymentPlatforms } from "@/pages/inventory/payment-platform";
 
 export default function App() {
   return (
@@ -20,6 +24,10 @@ export default function App() {
         <Route path="products/create" element={<CreateProduct />} />
         <Route path="categories" element={<Categories />} />
         <Route path="brands" element={<Brands />} />
+        <Route path="invoices" element={<Invoices />} />
+        <Route path="invoices/create" element={<CreateInvoice />} />
+        <Route path="invoices/:id" element={<InvoiceDetails />} />
+        <Route path="payment-platforms" element={<PaymentPlatforms />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

@@ -15,7 +15,12 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { ShelvingUnit, LayoutDashboardIcon, PackageIcon } from "lucide-react";
+import {
+  ShelvingUnit,
+  LayoutDashboardIcon,
+  PackageIcon,
+  ReceiptIcon,
+} from "lucide-react";
 
 const data = {
   user: {
@@ -38,6 +43,16 @@ const data = {
         { title: "Products", url: "/products" },
         { title: "Categories", url: "/categories" },
         { title: "Brands", url: "/brands" },
+      ],
+    },
+    {
+      title: "Invoices",
+      url: "#",
+      icon: <ReceiptIcon />,
+      isActive: true,
+      items: [
+        { title: "Invoices", url: "/invoices" },
+        { title: "Payment Platforms", url: "/payment-platforms" },
       ],
     },
   ],

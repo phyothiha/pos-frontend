@@ -31,6 +31,14 @@ export async function getProducts(page: number, signal?: AbortSignal) {
   return response.data;
 }
 
+export async function searchProducts(q: string, signal?: AbortSignal) {
+  const response = await api.get<{ data: Product[] }>(
+    "/v1/inventory/products/search",
+    { params: { q }, signal },
+  );
+  return response.data.data;
+}
+
 export async function createProduct(values: ProductFormValues) {
   const response = await api.post<{ data: Product }>("/v1/inventory/products", {
     ...values,
@@ -42,3 +50,21 @@ export async function createProduct(values: ProductFormValues) {
   return response.data;
 }
 
+export async function updateProduct(id: number, values: ProductFormValues) {
+  const response = await api.put<{ data: Product }>(
+    `/v1/inventory/products/${id}`,
+    {
+      ...values,
+      selling_price: Number(values.selling_price),
+      stock_quantity:
+        values.stock_quantity === undefined
+          ? undefined
+          : Number(values.stock_quantity),
+    },
+  );
+  return response.data;
+}
+
+export async function deleteProduct(id: number) {
+  await api.delete(`/v1/inventory/products/${id}`);
+}
